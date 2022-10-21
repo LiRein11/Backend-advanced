@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger/dist/decorators';
-import { BelongsToMany, Column, DataType, Model, Table } from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { Post } from 'src/posts/posts.model';
 import { Role } from 'src/roles/roles.model';
 import { UserRoles } from 'src/roles/user-roles.model';
 
-interface UserCreationAttrs{
-  email:string;
+interface UserCreationAttrs {
+  email: string;
   password: string;
 }
 
@@ -27,9 +28,12 @@ export class User extends Model<User, UserCreationAttrs> {
   banned: boolean; // Флаг блокировки (админы могут банить пользователей)
 
   @ApiProperty({ example: 'За хулиганство', description: 'Причина блокировки' })
-  @Column({ type: DataType.INTEGER, unique: true, allowNull: true })
+  @Column({ type: DataType.STRING, unique: true, allowNull: true })
   banReason: string; // Причина блокировки
 
   @BelongsToMany(() => Role, () => UserRoles)
   roles: Role[];
+
+  @HasMany(() => Post) 
+  posts: Post[]; // Один пользователь может иметь много постов
 }
